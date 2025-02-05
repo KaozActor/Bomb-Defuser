@@ -10,9 +10,9 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #222;
+            background-color: #2c3e50; /* Cor escura */
             color: #fff;
-            font-family: Arial, sans-serif;
+            font-family: Courier, monospace;
         }
 
         .bomb {
@@ -47,11 +47,13 @@
 
         #nextLevel {
             display: none;
-            margin-top: 20px;
-            padding: 10px;
+            margin-top: 5px; /* Menor espaço acima do botão */
+            padding: 5px; /* Diminui o tamanho do botão */
             background-color: green;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 14px; /* Diminui o tamanho da fonte */
+            text-align: center; /* Centraliza o texto */
         }
 
         #nextLevel:hover {
@@ -60,7 +62,7 @@
 
         #timeStamp {
             position: absolute;
-            top: 20px;
+            top: 60px; /* Movido para baixo para não sobrepor o timer */
             right: 20px;
             background-color: rgba(0, 0, 0, 0.7);
             padding: 10px;
@@ -71,17 +73,33 @@
         #timer {
             position: absolute;
             top: 20px;
+            right: 20px;
+        }
+
+        #level {
+            position: absolute;
+            bottom: 20px;
             left: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        #restart {
+            display: none;
+            margin-top: 20px;
             padding: 10px;
+            background-color: red;
             border-radius: 5px;
-            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #restart:hover {
+            background-color: darkred;
         }
     </style>
 </head>
 <body>
 
 <div class="bomb">
+    <div id="level">Nível: <span id="currentLevel">1</span></div>
     <div class="module" onclick="cutWire(1)">Módulo 1</div>
     <div class="module" onclick="cutWire(2)">Módulo 2</div>
     <div class="module" onclick="cutWire(3)">Módulo 3</div>
@@ -90,9 +108,12 @@
 
     <div id="status" class="status">Escolha um módulo para desarmar.</div>
     <div id="nextLevel" onclick="nextLevel()">Próximo Nível</div>
-    <div id="timer">Tempo: <span id="timeLeft">60</span></div> </div>
+    <div id="restart" onclick="restart()">Reiniciar</div>
+</div>
 
-<div id="timeStamp"></div>
+<div id="timer">Tempo restante: <span id="timeLeft">600</span></div>
+
+<div id="timeStamp" style="display: none;">Fase concluída em <span id="endTime"></span></div>
 
 <script>
     const sequences = [
@@ -102,9 +123,9 @@
 
     let currentLevel = 0;
     let userSequence = [];
-    let timeLeft = 600; // Tempo inicial em segundos
+    let timeLeft = 600; // Tempo inicial em segundos (10 minutos)
     let timerInterval;
-    const timePenalty = 100; // Tempo perdido ao explodir
+    const timePenalty = 60; // Tempo perdido ao explodir (1 minuto)
 
     function startTimer() {
         timerInterval = setInterval(() => {
@@ -123,6 +144,7 @@
 
     function startNextLevel() {
         currentLevel++;
+        document.getElementById("currentLevel").innerText = currentLevel + 1;
         userSequence = [];
         document.getElementById("status").innerText = "Escolha um módulo para desarmar.";
         document.getElementById("nextLevel").style.display = 'none';
@@ -161,9 +183,10 @@
 
         if (isCorrect) {
             document.getElementById("status").innerText = "A bomba foi desarmada com sucesso!";
-            document.getElementById("timeStamp").innerText = `Fase ${currentLevel + 1} concluída em ${new Date().toLocaleTimeString()}`;
+            document.getElementById("endTime").innerText = new Date().toLocaleTimeString();
+            document.getElementById("timeStamp").style.display = 'block';
             document.getElementById("nextLevel").style.display = 'block';
-            stopTimer(); // Para o timer ao vencer a fase
+            clearInterval(timerInterval); // Para o timer ao vencer a fase
         } else {
             bombExploded();
         }
@@ -178,12 +201,25 @@
         document.getElementById("timeLeft").innerText = timeLeft;
         stopTimer(); // Para o timer ao explodir a bomba
         currentLevel = 0; // Reinicia para o primeiro nível
+        document.getElementById("currentLevel").innerText = 1;
         userSequence = []; // Limpa a sequência do usuário
-        startTimer(); // Reinicia o timer
+        // Não reiniciar o timer
     }
 
     function nextLevel() {
         startNextLevel();
+    }
+
+    function restart() {
+        currentLevel = 0;
+        userSequence = [];
+        timeLeft = 600;
+        document.getElementById("status").innerText = "Escolha um módulo para desarmar.";
+        document.getElementById("nextLevel").style.display = 'none';
+        document.getElementById("restart").style.display = 'none';
+        document.getElementById("timeLeft").innerText = timeLeft;
+        document.getElementById("currentLevel").innerText = 1;
+        startTimer(); // Inicia o timer
     }
 
     startTimer(); // Inicia o timer no carregamento da página
