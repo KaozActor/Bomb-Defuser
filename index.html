@@ -94,6 +94,22 @@
         #restart:hover {
             background-color: darkred;
         }
+
+        /* Adicionando estilo para a tela de vitória */
+        #victoryScreen {
+            display: none;
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
     </style>
 </head>
 <body>
@@ -114,6 +130,9 @@
 <div id="timer">Tempo restante: <span id="timeLeft">600</span></div>
 
 <div id="timeStamp" style="display: none;">Fase concluída em <span id="endTime"></span></div>
+
+<!-- Adicionando a tela de vitória -->
+<div id="victoryScreen">Explosivo desarmado. "doutor-wd" está contente.</div>
 
 <script>
     const sequences = [
@@ -182,11 +201,17 @@
         const isCorrect = userSequence.every((value, index) => value === sequences[currentLevel][index]);
 
         if (isCorrect) {
-            document.getElementById("status").innerText = "A bomba foi desarmada com sucesso!";
-            document.getElementById("endTime").innerText = new Date().toLocaleTimeString();
-            document.getElementById("timeStamp").style.display = 'block';
-            document.getElementById("nextLevel").style.display = 'block';
-            clearInterval(timerInterval); // Para o timer ao vencer a fase
+            if (currentLevel === 2) { // Se o nível atual for 3
+                document.getElementById("victoryScreen").style.display = 'block';
+                document.getElementById("status").innerText = "Você desarmou a bomba!";
+                clearInterval(timerInterval); // Para o timer ao vencer a fase
+            } else {
+                document.getElementById("status").innerText = "A bomba foi desarmada com sucesso!";
+                document.getElementById("endTime").innerText = new Date().toLocaleTimeString();
+                document.getElementById("timeStamp").style.display = 'block';
+                document.getElementById("nextLevel").style.display = 'block';
+                clearInterval(timerInterval); // Para o timer ao vencer a fase
+            }
         } else {
             bombExploded();
         }
@@ -219,6 +244,7 @@
         document.getElementById("restart").style.display = 'none';
         document.getElementById("timeLeft").innerText = timeLeft;
         document.getElementById("currentLevel").innerText = 1;
+        document.getElementById("victoryScreen").style.display = 'none'; // Esconde a tela de vitória
         startTimer(); // Inicia o timer
     }
 
