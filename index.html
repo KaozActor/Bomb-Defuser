@@ -18,23 +18,25 @@
 
         .bomb {
             width: 300px;
-            height: 400px;
+            height: 500px; /* Aumentado para acomodar todos os módulos */
             background-color: black;
             border-radius: 10px;
             padding: 20px;
             position: relative;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 colunas */
+            grid-gap: 10px; /* Espaçamento entre os módulos */
         }
 
         .module {
-            width: 100%;
             height: 50px;
             background-color: red;
-            margin-bottom: 10px;
             border-radius: 5px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            font-size: 18px; /* Aumentado para melhor legibilidade */
         }
 
         .module:hover {
@@ -42,19 +44,21 @@
         }
 
         .status {
-            margin-top: 20px;
+            margin-top: 10px;
             font-size: 18px;
+            grid-column: span 3; /* Ocupa todas as colunas */
+            text-align: center; /* Centraliza o texto */
         }
 
         #nextLevel {
             display: none;
-            margin-top: 5px; /* Menor espaço acima do botão */
-            padding: 5px; /* Diminui o tamanho do botão */
+            padding: 5px;
             background-color: green;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px; /* Diminui o tamanho da fonte */
-            text-align: center; /* Centraliza o texto */
+            font-size: 14px;
+            text-align: center;
+            grid-column: span 3; /* Ocupa todas as colunas */
         }
 
         #nextLevel:hover {
@@ -63,7 +67,7 @@
 
         #timeStamp {
             position: absolute;
-            top: 60px; /* Movido para baixo para não sobrepor o timer */
+            top: 60px;
             right: 20px;
             background-color: rgba(0, 0, 0, 0.7);
             padding: 10px;
@@ -79,27 +83,29 @@
 
         #level {
             position: absolute;
-            bottom: 20px;
+            bottom: 70px; /* Dê mais espaço para a posição do botão reiniciar */
             left: 20px;
+            font-size: 18px; /* Aumentado para destaque */
         }
 
         #restart {
             display: none;
-            margin-top: 20px;
+            margin-top: 10px; /* Ajuste no espaçamento */
             padding: 10px;
             background-color: red;
             border-radius: 5px;
             cursor: pointer;
+            grid-column: span 3; /* Ocupa todas as colunas */
         }
 
         #restart:hover {
             background-color: darkred;
         }
 
-        /* Adicionando estilo para a tela de vitória */
+        /* Estilo para a tela de vitória */
         #victoryScreen {
             display: none;
-            position: fixed; /* Mudado para fixed para cobrir toda a tela */
+            position: fixed;
             background-color: rgba(0, 128, 0, 0.9);
             color: white;
             padding: 40px;
@@ -110,12 +116,45 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 24px; /* Aumenta o tamanho da fonte */
-            font-weight: bold; /* Torna o texto em negrito */
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8); /* Sombra para destacar */
-            border: 5px solid yellow; /* Borda amarela para contraste */
+            font-size: 24px; 
+            font-weight: bold; 
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            border: 5px solid yellow; 
         }
 
+        /* Estilo para a tela de dicas */
+        #helpScreen {
+            display: none;
+            position: fixed;
+            background-color: rgba(0, 0, 100, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        #helpButton {
+            margin-top: 10px;
+            padding: 5px;
+            background-color: blue;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            color: white;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        #helpButton:hover {
+            background-color: darkblue;
+        }
     </style>
 </head>
 <body>
@@ -127,10 +166,16 @@
     <div class="module" onclick="cutWire(3)">Módulo 3</div>
     <div class="module" onclick="cutWire(4)">Módulo 4</div>
     <div class="module" onclick="cutWire(5)">Módulo 5</div>
+    <div class="module" onclick="cutWire(6)">Módulo 6</div>
+    <div class="module" onclick="cutWire(7)">Módulo 7</div>
+    <div class="module" onclick="cutWire(8)">Módulo 8</div>
+    <div class="module" onclick="cutWire(9)">Módulo 9</div>
+    <div class="module" onclick="cutWire(0)">Módulo 0</div>
 
     <div id="status" class="status">Escolha um módulo para desarmar.</div>
     <div id="nextLevel" onclick="nextLevel()">Próximo Nível</div>
     <div id="restart" onclick="restart()">Reiniciar</div>
+    <div id="helpButton" onclick="toggleHelp()">Dicas</div>
 </div>
 
 <div id="timer">Tempo restante: <span id="timeLeft">600</span></div>
@@ -140,10 +185,18 @@
 <!-- Adicionando a tela de vitória -->
 <div id="victoryScreen">Explosivo desarmado!<br>"Doutor-WD" está contente.</div>
 
+<!-- Adicionando a tela de dicas -->
+<div id="helpScreen">
+    <h2>Dicas</h2>
+    <p>Clique nos módulos para desarmar a bomba. Se a sequência for correta, o próximo nível é iniciado. Caso incorreta, 60 segundos são subtraídos do tempo.</p>
+    <p id="specificHint">Dica do Nível 1: Criação do Avião</p>
+    <button onclick="toggleHelp()">Fechar</button>
+</div>
+
 <script>
     const sequences = [
-        [1, 3, 4],
-        [2, 5, 1],
+        [2, 3, 1, 0, 1, 9, 0, 6],  // Nível 1
+        [4, 5, 5, 5, 8, 0],  // Nível 2
     ];
 
     let currentLevel = 0;
@@ -167,18 +220,31 @@
         clearInterval(timerInterval);
     }
 
+    function updateHint() {
+        const hints = [
+            "Dica do Nível 1: Criação do Avião",
+            "Dica do Nível 2: Raiz de 2 + Pi",
+            "Dica do Nível 3: O poder do Dio é o T****", // Dica placeholder do nível 3
+        ];
+
+        document.getElementById("specificHint").innerText = hints[currentLevel];
+    }
+
     function startNextLevel() {
         currentLevel++;
-        document.getElementById("currentLevel").innerText = currentLevel + 1;
         userSequence = [];
         document.getElementById("status").innerText = "Escolha um módulo para desarmar.";
         document.getElementById("nextLevel").style.display = 'none';
         stopTimer(); // Para o timer do nível anterior
-        startTimer(); // Inicia o timer para o novo nível
 
-        if (currentLevel === sequences.length) {
+        if (currentLevel >= sequences.length) {
+            // Gera a sequência para o nível 3 baseado na hora.
             sequences.push(getCurrentTimeSequence());
         }
+        
+        document.getElementById("currentLevel").innerText = currentLevel + 1;
+        startTimer(); // Inicia o timer para o novo nível
+        updateHint(); // Atualiza a dica do nível atual
     }
 
     function getCurrentTimeSequence() {
@@ -187,10 +253,10 @@
         const minutes = now.getMinutes().toString().padStart(2, '0');
 
         return [
-            Math.min(Math.max(parseInt(hours[0]), 1), 5),
-            Math.min(Math.max(parseInt(hours[1]), 1), 5),
-            Math.min(Math.max(parseInt(minutes[0]), 1), 5),
-            Math.min(Math.max(parseInt(minutes[1]), 1), 5)
+            parseInt(hours[0]), // Módulo baseado na primeira hora
+            parseInt(hours[1]), // Módulo baseado na segunda hora
+            parseInt(minutes[0]), // Módulo baseado no primeiro minuto
+            parseInt(minutes[1])  // Módulo baseado no segundo minuto
         ];
     }
 
@@ -207,7 +273,7 @@
         const isCorrect = userSequence.every((value, index) => value === sequences[currentLevel][index]);
 
         if (isCorrect) {
-            if (currentLevel === 2) { // Se o nível atual for 3
+            if (currentLevel === 2) { // Nível 3
                 document.getElementById("victoryScreen").style.display = 'block';
                 document.getElementById("status").innerText = "Você desarmou a bomba!";
                 clearInterval(timerInterval); // Para o timer ao vencer a fase
@@ -234,7 +300,7 @@
         currentLevel = 0; // Reinicia para o primeiro nível
         document.getElementById("currentLevel").innerText = 1;
         userSequence = []; // Limpa a sequência do usuário
-        // Não reiniciar o timer
+        updateHint(); // Atualiza a dica para o nível 1
     }
 
     function nextLevel() {
@@ -251,8 +317,28 @@
         document.getElementById("timeLeft").innerText = timeLeft;
         document.getElementById("currentLevel").innerText = 1;
         document.getElementById("victoryScreen").style.display = 'none'; // Esconde a tela de vitória
+        document.getElementById("helpScreen").style.display = 'none';
+        updateHint(); // Restaura a dica para o nível 1
         startTimer(); // Inicia o timer
     }
+
+    function toggleHelp() {
+        const helpScreen = document.getElementById("helpScreen");
+        if (helpScreen.style.display === "none") {
+            helpScreen.style.display = "block";
+            stopTimer(); // Para o timer ao abrir a tela de dicas
+        } else {
+            helpScreen.style.display = "none";
+            startTimer(); // Retoma o timer ao fechar a tela de dicas
+        }
+    }
+
+    // Inicia a dica geral ao carregar a página
+    window.onload = function() {
+        document.getElementById("helpScreen").style.display = 'block';
+        stopTimer();        
+        updateHint(); // Atualiza a dica específica de nível 1
+    };
 
     startTimer(); // Inicia o timer no carregamento da página
 </script>
